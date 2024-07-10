@@ -1,23 +1,27 @@
 import pytest
 import pandas as pd
 from preprocess import preprocess_data
+from data_models import WineQuality
 
 @pytest.fixture
 def raw_data():
-    return {
-        "fixed acidity": [7.4, 7.8, 7.8],
-        "volatile acidity": [0.7, 0.88, 0.76],
-        "citric acid": [0.0, 0.0, 0.04],
-        "residual sugar": [1.9, 2.6, 2.3],
-        "chlorides": [0.076, 0.098, 0.092],
-        "free sulfur dioxide": [11.0, 25.0, 15.0],
-        "total sulfur dioxide": [34.0, 67.0, 54.0],
-        "density": [0.9978, 0.9968, 0.997],
-        "pH": [3.51, 3.2, 3.26],
-        "sulphates": [0.56, 0.68, 0.65],
-        "alcohol": [9.4, 9.8, 9.8],
-        "quality": [5, 5, 5]
-    }
+    return [
+        WineQuality(
+            fixed_acidity=7.4,
+            volatile_acidity=0.7,
+            citric_acid=0.0,
+            residual_sugar=1.9,
+            chlorides=0.076,
+            free_sulfur_dioxide=11.0,
+            total_sulfur_dioxide=34.0,
+            density=0.9978,
+            pH=3.51,
+            sulphates=0.56,
+            alcohol=9.4,
+            quality=5
+        ).dict(by_alias=True)
+        for _ in range(3)
+    ]
 
 def test_preprocess_data(raw_data):
     df = pd.DataFrame(raw_data)
