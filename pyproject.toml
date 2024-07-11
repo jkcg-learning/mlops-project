@@ -32,6 +32,9 @@ pre-commit = "^3.7.1"
 pytest-cov = "^5.0.0"
 invoke = "^2.2.0"
 
+[tool.commitizen]
+name = "cz_conventional_commits"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
