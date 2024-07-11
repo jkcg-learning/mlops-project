@@ -1,10 +1,11 @@
-# MLOps Project with CI/CD
 
-[![CI](https://github.com/jkcg-learning/mlops-project/actions/workflows/ci.yml/badge.svg)](https://github.com/jkcg-learning/mlops-project/actions/workflows/ci.yml)
+# MLOps Project
+
+[![CI](https://github.com/jkcg-learning/mlops-project/actions/workflows/ci.yaml/badge.svg)](https://github.com/jkcg-learning/mlops-project/actions/workflows/ci.yaml)
 
 ## Overview
 
-This project is an MLOps template designed for predicting wine quality based on various physicochemical properties. The project demonstrates best practices in Machine Learning Operations (MLOps) including data loading, preprocessing, model training, validation, and deployment. It uses a variety of modern tools and frameworks to ensure reproducibility, scalability, and maintainability.
+This project is an MLOps template designed for predicting wine quality based on various chemical properties. The project demonstrates best practices in Machine Learning Operations (MLOps) including data loading, preprocessing, model training, validation, and deployment. It uses a variety of modern tools and frameworks to ensure reproducibility, scalability, and maintainability.
 
 ## Features
 
@@ -21,6 +22,9 @@ This project is an MLOps template designed for predicting wine quality based on 
 - Changelog management using `Commitizen`.
 - Continuous integration using `GitHub Actions`.
 - Containerization using `Docker`.
+- Model serving using `FastAPI`.
+- Interactive UI for predictions using `Streamlit`.
+- Monitoring using `Prometheus` and `Grafana`.
 
 ## Project Structure
 
@@ -34,6 +38,8 @@ mlops-project/
 ├── dist/
 ├── docs/
 │   └── (generated documentation)
+├── mlruns/
+│   └── (mlflow model runs)
 ├── src/
 │   ├── config.yaml
 │   ├── data_loader.py
@@ -41,7 +47,9 @@ mlops-project/
 │   ├── main.py
 │   ├── preprocess.py
 │   ├── schema.py
+│   ├── serve.py
 │   ├── train_model.py
+│   ├── ui.py
 │   ├── utils.py
 │   └── tests/
 │       ├── test_data_loader.py
@@ -49,8 +57,10 @@ mlops-project/
 │       └── test_train_model.py
 ├── .dockerignore
 ├── Dockerfile
+├── docker-compose.yml
 ├── generate_docs.sh
 ├── poetry.lock
+├── prometheus.yml
 ├── pyproject.toml
 └── README.md
 ```
@@ -114,13 +124,52 @@ poetry build
 
 To build and run the Docker container:
 ```sh
-docker build -t mlops-project .
-docker run -it --rm mlops-project
+docker-compose up --build
 ```
+
+### Accessing the Applications
+
+- **Streamlit UI**: [http://localhost:8501](http://localhost:8501)
+- **FastAPI server (for predictions)**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- **Prometheus**: [http://localhost:9090](http://localhost:9090)
+- **Grafana**: [http://localhost:3000](http://localhost:3000) (Default login credentials are `admin` for both username and password)
 
 ## Continuous Integration
 
 This project uses GitHub Actions for continuous integration. The workflow is defined in `.github/workflows/ci.yml`. It includes steps for installing dependencies, linting, testing, and updating the changelog.
+
+## Troubleshooting
+
+### Loading the Latest Model from `mlruns`
+
+Ensure that the model directory exists and is correctly referenced in the FastAPI application. The model should be saved in the `mlruns` directory.
+
+### Matching Feature Names
+
+Ensure that the feature names in the input data match exactly with the feature names used during training.
+
+### FastAPI Application Schema
+
+Ensure the FastAPI application uses the correct feature names in the input schema and when creating the input dataframe.
+
+### Example Request Payload
+
+The request payload to the `/predict` endpoint should look like this:
+```json
+{
+    "fixed acidity": 7.4,
+    "volatile acidity": 0.7,
+    "citric acid": 0.0,
+    "residual sugar": 1.9,
+    "chlorides": 0.076,
+    "free sulfur dioxide": 11.0,
+    "total sulfur dioxide": 34.0,
+    "density": 0.9978,
+    "pH": 3.51,
+    "sulphates": 0.56,
+    "alcohol": 9.4
+}
+```
 
 ## License
 
