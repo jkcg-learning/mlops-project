@@ -1,6 +1,12 @@
 name: CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
@@ -8,7 +14,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    
+
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
@@ -29,13 +35,18 @@ jobs:
 #        poetry run pytest
 
     - name: Update changelog
-      if: github.event_name == 'push'
       run: |
-        poetry run cz changelog
+        cz changelog --unreleased-version $(date +%Y-%m-%d) --incremental
+        cat CHANGELOG.md
+      env:
+        GITHUB_TOKEN: ${{ secrets.ACTIONS }}
+
+    - name: Commit and push changelog
+      run: |
         git config --global user.name 'github-actions[bot]'
-        git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
         git add CHANGELOG.md
-        git commit -m "docs: update changelog"
+        git commit -m 'chore: update changelog'
         git push
       env:
         GITHUB_TOKEN: ${{ secrets.ACTIONS }}
