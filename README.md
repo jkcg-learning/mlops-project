@@ -5,7 +5,7 @@
 
 ## Overview
 
-This project is an MLOps template designed for predicting wine quality based on various chemical properties. The project demonstrates best practices in Machine Learning Operations (MLOps) including data loading, preprocessing, model training, validation, and deployment. It uses a variety of modern tools and frameworks to ensure reproducibility, scalability, and maintainability.
+This project is an MLOps template designed for predicting wine quality based on various physicochemical properties. The project demonstrates best practices in Machine Learning Operations (MLOps) including data loading, preprocessing, model training, validation, and deployment. It uses a variety of modern tools and frameworks to ensure reproducibility, scalability, and maintainability.
 
 ## Features
 
@@ -25,6 +25,7 @@ This project is an MLOps template designed for predicting wine quality based on 
 - Model serving using `FastAPI`.
 - Interactive UI for predictions using `Streamlit`.
 - Monitoring using `Prometheus` and `Grafana`.
+- Data drift detection using `Evidently`.
 
 ## Project Structure
 
@@ -32,9 +33,12 @@ This project is an MLOps template designed for predicting wine quality based on 
 mlops-project/
 ├── .github/
 │   └── workflows/
-│       └── ci.yml
+│       ├── ci.yml
+│       ├── retrain.yml
+│       └── monitor_drift.yml
 ├── data/
-│   └── winequality-red.csv
+│   ├── winequality-red.csv
+│   └── winequality-prod.csv  # Simulated production data
 ├── dist/
 ├── docs/
 │   └── (generated documentation)
@@ -51,11 +55,14 @@ mlops-project/
 │   ├── train_model.py
 │   ├── ui.py
 │   ├── utils.py
+│   ├── retrain_model.py
+│   ├── monitor_data_drift.py
 │   └── tests/
 │       ├── test_data_loader.py
 │       ├── test_preprocess.py
 │       └── test_train_model.py
 ├── .dockerignore
+├── .gitignore
 ├── Dockerfile
 ├── docker-compose.yml
 ├── generate_docs.sh
@@ -136,7 +143,19 @@ docker-compose up --build
 
 ## Continuous Integration
 
-This project uses GitHub Actions for continuous integration. The workflow is defined in `.github/workflows/ci.yml`. It includes steps for installing dependencies, linting, testing, and updating the changelog.
+This project uses GitHub Actions for continuous integration and dependency management. The workflows are defined in the `.github/workflows` directory.
+
+### CI Workflow
+
+The `ci.yml` workflow includes steps for installing dependencies, linting, testing, and updating the changelog.
+
+### Retraining Workflow
+
+The `retrain.yml` workflow automatically retrains the model on a weekly basis.
+
+### Monitor Data Drift
+
+The `monitor_drift.yml` workflow runs weekly to monitor data drift using Evidently.
 
 ## Troubleshooting
 
