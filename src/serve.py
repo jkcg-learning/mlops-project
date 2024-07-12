@@ -1,10 +1,10 @@
-import mlflow
-import mlflow.pyfunc
 from fastapi import FastAPI, HTTPException
 import pandas as pd
 from pydantic import BaseModel
-from prometheus_client import start_http_server, Summary, Counter
+import mlflow.pyfunc
 import uvicorn
+from prometheus_client import start_http_server, Summary, Counter
+from datetime import datetime
 
 # Define the request body schema
 class WineQualityInput(BaseModel):
@@ -23,36 +23,46 @@ class WineQualityInput(BaseModel):
 # Initialize the FastAPI app
 app = FastAPI()
 
-# Function to get the latest model
-def get_latest_model():
-    client = mlflow.tracking.MlflowClient()
-    experiments = client.search_experiments()
-    latest_run = None
-    for experiment in experiments:
-        runs = client.search_runs(experiment_ids=[experiment.experiment_id])
-        for run in runs:
-            if latest_run is None or run.info.start_time > latest_run.info.start_time:
-                latest_run = run
-    if latest_run:
-        model_uri = f"/app/mlruns/{latest_run.info.experiment_id}/{latest_run.info.run_id}/artifacts/model"
-        return mlflow.pyfunc.load_model(model_uri)
-    else:
-        raise Exception("No models found")
-
 # Load the latest model
-model = get_latest_model()
+model_path = "/app/mlruns/latest_model_path"  # Adjust to point to the latest model
+model = mlflow.pyfunc.load_model(model_path)
 
 # Create Prometheus metrics
 REQUEST_TIME = Summary('request_processing_seconds', 'Time spent processing request')
 PREDICTION_COUNT = Counter('prediction_count', 'Number of predictions made')
 
+# Logging function
+def log_prediction(data, prediction):
+    log_entry = data.copy()
+    log_entry['prediction'] = prediction
+    log_entry['timestamp'] = datetime.utcnow().isoformat()
+    log_df = pd.DataFrame([log_entry])
+    log_df.to_csv('predictions_log.csv', mode='a', header=False, index=False)
+
 @app.post("/predict")
 @REQUEST_TIME.time()
 def predict(input: WineQualityInput):
     try:
-        input_df = pd.DataFrame([input.dict()])
+        input_data = {
+            "fixed acidity": input.fixed_acidity,
+            "volatile acidity": input.volatile_acidity,
+            "citric acid": input.citric_acid,
+            "residual sugar": input.residual_sugar,
+            "chlorides": input.chlorides,
+            "free sulfur dioxide": input.free_sulfur_dioxide,
+            "total sulfur dioxide": input.total_sulfur_dioxide,
+            "density": input.density,
+            "pH": input.pH,
+            "sulphates": input.sulphates,
+            "alcohol": input.alcohol
+        }
+        input_df = pd.DataFrame([input_data])
         prediction = model.predict(input_df)
         PREDICTION_COUNT.inc()
+        
+        # Log prediction
+        log_prediction(input_data, prediction[0])
+        
         return {"quality": prediction[0]}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
