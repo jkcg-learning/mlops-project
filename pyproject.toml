@@ -21,6 +21,7 @@ loguru = "^0.7.2"
 fastapi = "^0.111.0"
 prometheus-client = "^0.20.0"
 streamlit = "^1.23.0"
+evidently = "^0.4.30"
 
 
 [tool.poetry.group.dev.dependencies]
