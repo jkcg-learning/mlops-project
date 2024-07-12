@@ -34,14 +34,15 @@ jobs:
 #      run: |
 #        poetry run pytest
 
-    - name: Update changelog
+    - name: Update changelog on pull request
+      if: github.event_name == 'pull_request'
       run: |
-        cz changelog --unreleased-version $(date +%Y-%m-%d) --incremental
-        cat CHANGELOG.md
+        ./append_changelog.sh
       env:
         GITHUB_TOKEN: ${{ secrets.ACTIONS }}
 
     - name: Commit and push changelog
+      if: github.event_name == 'pull_request'
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
