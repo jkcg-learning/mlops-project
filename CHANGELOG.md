@@ -2,4 +2,4 @@
 
 ### Feat
 
-- - Serving and Monitoring
+- retraining mechanism
