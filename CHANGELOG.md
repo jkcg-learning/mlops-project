@@ -1,5 +1,1 @@
 ## Unreleased
-
-### Feat
-
-- retraining mechanism
