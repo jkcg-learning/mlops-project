@@ -1,8 +1,8 @@
 name: Monitor Data Drift
 
 on:
-  schedule:
-    - cron: '0 0 * * 1'  # Weekly data drift monitoring
+  # schedule:
+  #   - cron: '0 0 * * 1'  # Weekly data drift monitoring
   workflow_dispatch:  # Allows manual triggering of the workflow
 
 jobs:
