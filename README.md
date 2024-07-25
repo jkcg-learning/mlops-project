@@ -210,7 +210,3 @@ This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENS
 - [pdoc](https://pdoc.dev/)
 - [Commitizen](https://commitizen-tools.github.io/commitizen/)
 - [Docker](https://www.docker.com/)
-
-## Contact
-
-If you have any questions or feedback, please feel free to contact us at [contact@jkcg.me].
